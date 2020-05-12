@@ -3,6 +3,8 @@ const mongodb = require('mongodb')
 const COLLECTION_NAME_TEST = 'tests'
 const COLLECTION_NAME_QUESTIONS = 'questions'
 const COLLECTION_NAME_SUBMISSION='submissions'
+const COLLECTION_NAME_FEEDBACK='feedbacks'
+const OBJECT_TYPE_TEST='test'
 
 class TestMgr{
      constructor(testId){
@@ -66,6 +68,20 @@ class TestMgr{
             console.log("error while updating submission collection.")
        }
     }
+    
+    async submitFeddback(feedbackBody){
+        let db = getDb();
+        try{
+        let feedbackSubmissionResult = await db.collection(COLLECTION_NAME_FEEDBACK).insertOne(feedbackBody)          
+        if(feedbackSubmissionResult && feedbackSubmissionResult.ops && feedbackSubmissionResult.ops.length){
+            return feedbackSubmissionResult.ops
+        }
+        return feedbackSubmissionResult;     
+       }
+       catch(err){
+            console.log("error while updating submission collection.")
+       }
+    }
 
     async createTest(testObj){
       let db = getDb();
@@ -108,6 +124,31 @@ class TestMgr{
         }
       }
       
+    }
+
+
+    async getFeedBackForObject(params){
+        if(!Object.keys(params).length){
+            throw {error:"empty request!"}
+        } 
+        try{
+        let db = getDb();
+        if(params.objectType===OBJECT_TYPE_TEST){
+            let feedbacks = await db.collection(COLLECTION_NAME_FEEDBACK).find({objectType:params.objectType,userId:params.userId,objectId: { $in: params.objectIds }}).toArray(); 
+            if(feedbacks && feedbacks.length){
+                return feedbacks
+            }
+            else{
+                return {}
+             }
+            }
+        }
+        catch(err){
+            console.log("====debug====err",err)
+            throw err
+
+         }
+
     }
 
  }

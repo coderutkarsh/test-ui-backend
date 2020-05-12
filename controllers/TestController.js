@@ -43,5 +43,31 @@ exports.createTest = (req,res,next)=>{
     }).catch((err)=>{
         res.status(500).json(err)
     })
+}
 
+exports.submitFeedback = (req,res,next)=>{
+    let feedbackBody = req.body
+    let TestMgrObj = new TestMgr(); 
+    TestMgrObj.submitFeddback(feedbackBody).then((resp)=>{
+        res.status(200).json(resp)
+    }).catch((err)=>{
+        res.status(500).json(err)
+    }) 
+}
+
+exports.getFeedBackForObject = (req,res,next)=>{
+    let objectType = req.body.objectType
+    let objectIds = req.body.objectIds
+    let userId = req.body.userId
+    if(objectType && objectIds && userId)
+    {let TestMgrObj = new TestMgr(); 
+    TestMgrObj.getFeedBackForObject({objectType,objectIds,userId}).then((resp)=>{
+        res.status(200).json(resp)
+    }).catch((err)=>{
+        res.status(500).json(err)
+    }) 
+    }
+    else{
+        res.status(400).json({error:"mandatory input is missiong"})
+    }
 }

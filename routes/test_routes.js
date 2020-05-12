@@ -7,7 +7,8 @@ Router.get('/getTest',TestController.getTest)
 Router.get('/getSubmissionsForUser',TestController.getSubmissionsForUser)
 Router.post('/createTest',TestController.createTest)
 Router.post('/submitTest',TestController.submitTest)
-
+Router.post('/submitFeedback_v2',TestController.submitFeedback)
+Router.post('/getFeedBackForObject',TestController.getFeedBackForObject)
 
 /* Users' routes */
 Router.post('/signupUser',UserController.signupUser)
