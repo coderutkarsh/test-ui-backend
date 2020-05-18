@@ -20,7 +20,7 @@ class TestMgr{
              queryObj['_id']=mongodb.ObjectId(this.id)
          }
          else{
-            let otherFields = ['grade','subject','Target']
+            let otherFields = ['grade','subject','target']
             for(let field of otherFields){
                 if(params[field]){
                    queryObj[field]=field==='grade'?parseInt(params[field]):params[field]
@@ -28,8 +28,13 @@ class TestMgr{
             }
          }
          let tests = await db.collection(COLLECTION_NAME_TEST).find(queryObj).toArray();          
+         console.log("====debug====tests",tests)
+         
          if(tests && tests.length){
-            for(let test of tests){
+            let testsToReturn = tests.filter((test)=>{
+                return test.isPublic || (test.studentEmails && test.studentEmails.includes(params.userEmail)) 
+            })
+            for(let test of testsToReturn){
                 let questionsIds = test.questions ? test.questions.map((qId)=>mongodb.ObjectId(qId)) :[]
                 if(questionsIds){
                     let questions = await db.collection(COLLECTION_NAME_QUESTIONS).find({ _id: { $in: questionsIds }}).toArray(); 
@@ -41,7 +46,7 @@ class TestMgr{
             if(this.id){
                return tests[0] 
             }
-            return tests
+            return testsToReturn
          }          
     }
     
